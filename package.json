@@ -1,0 +1,64 @@
+{
+    "name": "create-test",
+    "displayName": "Create test",
+    "description": "Creates or opem test from source file",
+    "version": "0.0.1",
+    "publisher": "eskimoblood",
+    "engines": {
+        "vscode": "^1.19.0"
+    },
+    "categories": ["Other"],
+    "activationEvents": ["onCommand:extension.createTest"],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.createTest",
+                "title": "Create test"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Go To Test configuration",
+            "properties": {
+                "goToTest.testFolder": {
+                    "type": "string",
+                    "default": "test",
+                    "description": "folder pattern"
+                },
+                "goToTest.testFileExtension": {
+                    "type": "string",
+                    "default": ".spec.js",
+                    "description": "folder pattern"
+                },
+                "goToTest.testFileTemplate": {
+                    "type": "array",
+                    "default": ["import ${moduleName} from '${modulePath}'"],
+                    "description": "template for the test file"
+                },
+                "goToTest.srcFolder": {
+                    "type": ["string", null],
+                    "default": null,
+                    "description":
+                        "path of the source folder if the folder should not be part of folders in the test folder"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.43",
+        "filepath": "^1.1.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "vscode-uri": "^1.0.1"
+    },
+    "dependencies": {}
+}
