@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
             const uri = editor.document.uri
             const workSpaceUri = vscode.workspace.getWorkspaceFolder(uri).uri
-            const config = vscode.workspace.getConfiguration('goToTest')
+            const config = vscode.workspace.getConfiguration('createTest')
             const file = pathToFile(uri, workSpaceUri, config)
             if (file.exists()) {
                 openFile(file)

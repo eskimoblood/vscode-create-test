@@ -2,13 +2,17 @@
     "name": "create-test",
     "displayName": "Create test",
     "description": "Creates or opem test from source file",
-    "version": "0.0.1",
+    "version": "0.3.0",
     "publisher": "eskimoblood",
     "engines": {
         "vscode": "^1.19.0"
     },
-    "categories": ["Other"],
-    "activationEvents": ["onCommand:extension.createTest"],
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.createTest"
+    ],
     "main": "./out/extension",
     "contributes": {
         "commands": [
@@ -21,29 +25,41 @@
             "type": "object",
             "title": "Go To Test configuration",
             "properties": {
-                "goToTest.testFolder": {
+                "createTest.testFolder": {
                     "type": "string",
                     "default": "test",
                     "description": "folder pattern"
                 },
-                "goToTest.testFileExtension": {
+                "createTest.testFileExtension": {
                     "type": "string",
                     "default": ".spec.js",
                     "description": "folder pattern"
                 },
-                "goToTest.testFileTemplate": {
+                "createTest.testFileTemplate": {
                     "type": "array",
-                    "default": ["import ${moduleName} from '${modulePath}'"],
+                    "default": [
+                        "import ${moduleName} from '${modulePath}'"
+                    ],
                     "description": "template for the test file"
                 },
-                "goToTest.srcFolder": {
-                    "type": ["string", null],
+                "createTest.srcFolder": {
+                    "type": [
+                        "string",
+                        null
+                    ],
                     "default": null,
-                    "description":
-                        "path of the source folder if the folder should not be part of folders in the test folder"
+                    "description": "path of the source folder if the folder should not be part of folders in the test folder"
                 }
             }
-        }
+        },
+        "keybindings": [
+            {
+                "command": "extension.createTest",
+                "key": "ctrl+t",
+                "mac": "cmd+t",
+                "when": "editorTextFocus"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
@@ -55,10 +71,11 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
-        "filepath": "^1.1.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6",
         "vscode-uri": "^1.0.1"
     },
-    "dependencies": {}
+    "dependencies": {
+        "filepath": "^1.1.0"
+    }
 }
