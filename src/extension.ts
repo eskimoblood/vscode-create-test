@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (file.exists()) {
                 openFile(file)
             } else {
-                createFile(file, uri, config).then(openFile)
+                createFile(file, uri, workSpaceUri, config).then(openFile)
             }
         }
     )

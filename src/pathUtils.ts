@@ -34,21 +34,41 @@ export const pathToFile = (uri: Uri, workSpaceUri: Uri, config) =>
         name(pathFromUri(uri)) + config.testFileExtension
     )
 
-export const createFile = (file, uri, config): Promise<any> => {
-    const relativePath = filepath
-        .create(file.path)
+const getTemplate = (config: {
+    testFileTemplate: Array<String> | Object
+}): Thenable<Array<String>> =>
+    Array.isArray(config.testFileTemplate)
+        ? Promise.resolve(config.testFileTemplate)
+        : vscode.window
+              .showQuickPick(Object.keys(config.testFileTemplate))
+              .then(key => config.testFileTemplate[key])
+
+const getRelativePath = (p1, p2) =>
+    filepath
+        .create(p1.path)
         .dir()
-        .relative(uri.path)
+        .relative(p2.path)
+
+export const createFile = (file, uri, workSpaceUri, config): Thenable<any> => {
+    const relativePath = getRelativePath(file, uri)
     const filePath = filepath.create(relativePath)
     const moduleName = name(filePath)
     const modulePath = relativePath.replace(filePath.extname(), '')
-    return file.write(
-        config.testFileTemplate
-            .map(line =>
-                line
-                    .replace('${moduleName}', moduleName)
-                    .replace('${modulePath}', modulePath)
-            )
-            .join('\n')
+    return getTemplate(config).then(template =>
+        file.write(
+            template
+                .map(line =>
+                    line
+                        .replace('${moduleName}', moduleName)
+                        .replace('${modulePath}', modulePath)
+                        .replace(/\${findPath\('((\/?\w\/?)+)'\)}/, (_, p) =>
+                            getRelativePath(
+                                file,
+                                pathFromUri(workSpaceUri).append(p)
+                            )
+                        )
+                )
+                .join('\n')
+        )
     )
 }

@@ -37,15 +37,21 @@ suite('PathUtils', () => {
 
     test('it writes the file', () => {
         const config = {
-            testFileTemplate: ["import ${moduleName} from '${modulePath}'"],
+            testFileTemplate: [
+                "import ${moduleName} from '${modulePath}'",
+                "import foo from '${findPath('/test/utils/foo')}'",
+            ],
         }
         let r
         const file = {
             path: '/User/someUser/project/test/src/folder1/file.spec.js',
-            write: p => (r = p),
+            write: p => p,
         }
-        pathUtils.createFile(file, uri, config)
-
-        assert.equal(r, "import file from '../../../src/folder1/file'")
+        return pathUtils.createFile(file, uri, workSpaceUri, config).then(p => {
+            assert.equal(
+                p,
+                "import file from '../../../src/folder1/file'\nimport foo from '../../utils/foo'"
+            )
+        })
     })
 })

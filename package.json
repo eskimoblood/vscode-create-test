@@ -1,18 +1,14 @@
 {
     "name": "create-test",
-    "displayName": "Create test",
-    "description": "Creates or opem test from source file",
-    "version": "0.3.0",
+    "displayName": "Switch to test",
+    "description": "Open or creates test from from source file",
+    "version": "1.0.2",
     "publisher": "eskimoblood",
     "engines": {
         "vscode": "^1.19.0"
     },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:extension.createTest"
-    ],
+    "categories": ["Other"],
+    "activationEvents": ["onCommand:extension.createTest"],
     "main": "./out/extension",
     "contributes": {
         "commands": [
@@ -23,32 +19,30 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Go To Test configuration",
+            "title": "Switch to test configuration",
             "properties": {
                 "createTest.testFolder": {
                     "type": "string",
                     "default": "test",
-                    "description": "folder pattern"
+                    "description": "name of the test folder"
                 },
                 "createTest.testFileExtension": {
                     "type": "string",
                     "default": ".spec.js",
-                    "description": "folder pattern"
+                    "description": "test file extension"
                 },
                 "createTest.testFileTemplate": {
-                    "type": "array",
                     "default": [
                         "import ${moduleName} from '${modulePath}'"
                     ],
+                    "type": ["array", "object"],
                     "description": "template for the test file"
                 },
                 "createTest.srcFolder": {
-                    "type": [
-                        "string",
-                        null
-                    ],
+                    "type": ["string", null],
                     "default": null,
-                    "description": "path of the source folder if the folder should not be part of folders in the test folder"
+                    "description":
+                        "path of the source folder if the folder should not be part of folders in the test folder"
                 }
             }
         },

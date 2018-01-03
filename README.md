@@ -18,7 +18,9 @@ To enable this kind of path creation you need to set `testFolder` setting to a s
 
 ### Test file template
 
-You can specify a template that is used to create the new test. In the template you can add placeholders for the `moduleName` and the `modulePath`. The default is
+You can specify a template that is used to create the new test. In the template you can add placeholders for the `moduleName` and the `modulePath` and `findPath`. While the first two are based on the module and used like simple placeholders, `findPath` gets a path string passed like this `${findPath('/test/utils/foo')}`.The passed path must be relative to the project root. The statment then will be replace by the path relative to the test file.
+
+The default is
 
 ```
 ["import ${moduleName} from '${modulePath}'"]
@@ -29,6 +31,7 @@ But you set the to more complex like this:
 ```
 [
     "import ${moduleName} from '${modulePath}'"
+    "import testUtils from '${findPath('/test/utils/someModule')}'"
     "",
     "describe('${moduleName}', (){",
     "  it('', (){",
@@ -36,6 +39,25 @@ But you set the to more complex like this:
     "  })",
     "})"
 ]
+```
+
+The extension also supports multiple templates, by using on an object. When you use the extension it will show you the object keys to select a template:
+
+```
+{
+    "simpleTemplate": [
+        "import ${moduleName} from '${modulePath}'"
+    ],
+   "advancedTemplate": [
+        "import ${moduleName} from '${modulePath}'"
+        "",
+        "describe('${moduleName}', (){",
+        "  it('', (){",
+        "",
+        "  })",
+        "})"
+    ]
+}
 ```
 
 ## Extension Settings
@@ -46,6 +68,11 @@ But you set the to more complex like this:
 * `myExtension.srcFolder`: remove the source folder from the test file path
 
 ## Release Notes
+
+### 1.0.0
+
+Add multiple templates
+Add `findPath` in templates
 
 ### 1.0.0
 

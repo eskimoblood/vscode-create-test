@@ -1,7 +1,12 @@
 # Change Log
+
 All notable changes to the "create-test" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
-- Initial release
+## [1.2.0]
+
+* Add multiple templates
+* Add `findPath` to template
+  ## [Unreleased]
+* Initial release
