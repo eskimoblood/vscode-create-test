@@ -61,8 +61,8 @@ const getRelativePath = (p1, p2) =>
         .relative(p2.toString())
 
 export const createFile = (file, uri, workSpaceUri, config): Thenable<any> => {
-    const filePath = filepath.create(uri.fsPath);
-    const relativePath = getRelativePath(file, filePath);
+    const filePath = filepath.create(uri.fsPath)
+    const relativePath = getRelativePath(file, filePath)
     const moduleName = name(filePath)
     const modulePath = relativePath.replace(filePath.extname(), '')
     return getTemplate(config).then(template =>
