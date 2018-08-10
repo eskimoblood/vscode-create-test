@@ -62,8 +62,8 @@
         "keybindings": [
             {
                 "command": "extension.createTest",
-                "key": "ctrl+t",
-                "mac": "cmd+t",
+                "key": "ctrl+alt+t",
+                "mac": "cmd+alt+t",
                 "when": "editorTextFocus"
             }
         ]
