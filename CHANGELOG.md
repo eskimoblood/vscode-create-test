@@ -4,9 +4,9 @@ All notable changes to the "create-test" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.2.0]
+## [1.1.0]
 
 * Add multiple templates
 * Add `findPath` to template
-  ## [Unreleased]
+  ## [1.0.0]
 * Initial release

@@ -1,0 +1,1 @@
+import extension.spec from '../../src/extension.spec'

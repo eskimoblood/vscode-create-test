@@ -1,0 +1,1 @@
+import extension from '../../src/extension'

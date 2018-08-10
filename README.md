@@ -49,10 +49,10 @@ The extension also supports multiple templates, by using on an object. When you 
         "import ${moduleName} from '${modulePath}'"
     ],
    "advancedTemplate": [
-        "import ${moduleName} from '${modulePath}'"
+        "import ${moduleName} from '${modulePath}'",
         "",
-        "describe('${moduleName}', (){",
-        "  it('', (){",
+        "describe('${moduleName}', ()=>{",
+        "  it('', ()=>{",
         "",
         "  })",
         "})"
@@ -63,13 +63,13 @@ The extension also supports multiple templates, by using on an object. When you 
 ## Extension Settings
 
 * `createTest.testFolder`: path to the test folder, if the string starts with `./` it will be search relative to the opened file, default is `"test"`
-* `myExtension.testFileExtension`: the file extension of the tests, default is `".spec.js"`
-* `myExtension.testFileTemplate`: the template for the new created test, default is `["import ${moduleName} from '${modulePath}'"]`
+* `createTest.testFileExtension`: the file extension of the tests, default is `".spec.js"`
+* `createTest.testFileTemplate`: the template for the new created test, default is `["import ${moduleName} from '${modulePath}'"]`
 * `myExtension.srcFolder`: remove the source folder from the test file path
 
 ## Release Notes
 
-### 1.0.0
+### 1.1.0
 
 Add multiple templates
 Add `findPath` in templates
