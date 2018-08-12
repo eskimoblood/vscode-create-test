@@ -56,6 +56,11 @@
                     ],
                     "default": null,
                     "description": "path of the source folder if the folder should not be part of folders in the test folder"
+                },
+                "createTest.sourceFileExtension": {
+                    "type": "string",
+                    "default": ".js",
+                    "description": "source file extension"
                 }
             }
         },
