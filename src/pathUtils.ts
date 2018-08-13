@@ -12,7 +12,7 @@ const pathFromUri = ({ fsPath }: Uri) => filepath.create(fsPath)
 
 const unixifyPath = (path) => (slashChar == "\\") ? path.replace(/\\/g, "/") : path
 
-const isTestModule = ({ uri, workSpaceUri, config }) => {
+const isTestModule = (uri: Uri, workSpaceUri: Uri, config) => {
     const path = uri.fsPath.replace(workSpaceUri.fsPath, '')
     return isRelativeFolder(config)
         ? filepath.create(filepath.create(path).dirname()).basename() == config.testFolder.substr(2)
@@ -48,8 +48,8 @@ const name = (p, ext) => p.basename(ext)
 
 export const pathToFile = (uri: Uri, workSpaceUri: Uri, config) => {
     const _isTestModule = isTestModule(uri, workSpaceUri, config);
-    const basename = name(pathFromUri(uri), _isTestModule ? config.testFileExtension : config.sourceFileExtension);
-    const extname = _isTestModule ? config.sourceFileExtension : config.testFileExtension;
+    const basename = name(pathFromUri(uri), _isTestModule ? config.testFileExtension : config.srcFileExtension);
+    const extname = _isTestModule ? config.srcFileExtension : config.testFileExtension;
     return pathToNewFolder(uri, workSpaceUri, config).append(basename + extname);
     }
 
@@ -68,10 +68,10 @@ const getRelativePath = (p1, p2) =>
         .dir()
         .relative(p2.toString())
 
-export const createFile = (file, uri, workSpaceUri, config): Thenable<any> => {
+export const createFile = (file, uri: Uri, workSpaceUri: Uri, config): Thenable<any> => {
     const filePath = filepath.create(uri.fsPath)
     const relativePath = getRelativePath(file, filePath)
-    const moduleName = name(filePath, config.sourceFileExtension)
+    const moduleName = name(filePath, config.srcFileExtension)
     const modulePath = relativePath.replace(filePath.extname(), '')
     return getTemplate(config).then(template =>
         file.write(
