@@ -2,7 +2,7 @@
     "name": "create-test",
     "displayName": "Switch to test",
     "description": "Open or creates test from from source file",
-    "version": "1.1.4",
+    "version": "1.2.0",
     "publisher": "eskimoblood",
     "engines": {
         "vscode": "^1.19.0"
