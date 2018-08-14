@@ -56,14 +56,19 @@
                     ],
                     "default": null,
                     "description": "path of the source folder if the folder should not be part of folders in the test folder"
+                },
+                "createTest.srcFileExtension": {
+                    "type": "string",
+                    "default": ".js",
+                    "description": "source file extension"
                 }
             }
         },
         "keybindings": [
             {
                 "command": "extension.createTest",
-                "key": "ctrl+t",
-                "mac": "cmd+t",
+                "key": "ctrl+alt+t",
+                "mac": "cmd+alt+t",
                 "when": "editorTextFocus"
             }
         ]

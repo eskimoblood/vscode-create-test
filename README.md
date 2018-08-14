@@ -64,6 +64,7 @@ The extension also supports multiple templates, by using on an object. When you 
 
 * `createTest.testFolder`: path to the test folder, if the string starts with `./` it will be search relative to the opened file, default is `"test"`
 * `createTest.testFileExtension`: the file extension of the tests, default is `".spec.js"`
+* `createTest.srcFileExtension`: the file extension of the source files, default is `".js"`
 * `createTest.testFileTemplate`: the template for the new created test, default is `["import ${moduleName} from '${modulePath}'"]`
 * `myExtension.srcFolder`: remove the source folder from the test file path
 

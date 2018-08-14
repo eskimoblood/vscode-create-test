@@ -2,37 +2,56 @@ import * as vscode from 'vscode'
 import * as filepath from 'filepath'
 import { Uri } from 'vscode'
 
+const debugMsg = (msg) => vscode.debug.activeDebugConsole.appendLine(msg)
+
+const slashChar = (filepath.create("dir1", "dir2").toString().indexOf("\\") > 0) ? "\\" : "/"
+
 const isRelativeFolder = config => config.testFolder.startsWith('./')
 
-const pathFromUri = ({ path }: Uri) => filepath.create(path)
+const pathFromUri = ({ fsPath }: Uri) => filepath.create(fsPath)
 
-const relativePath = (uri, config) =>
-    pathFromUri(uri)
-        .dir()
-        .append(config.testFolder.replace('./', ''))
+const unixifyPath = (path) => (slashChar == "\\") ? path.replace(/\\/g, "/") : path
+
+const isTestModule = (uri: Uri, workSpaceUri: Uri, config) => {
+    const path = uri.fsPath.replace(workSpaceUri.fsPath, '')
+    return isRelativeFolder(config)
+        ? filepath.create(filepath.create(path).dirname()).basename() == config.testFolder.substr(2)
+        : path.startsWith(slashChar + config.testFolder)
+}
+
+const relativePath = (uri: Uri, workSpaceUri: Uri, config) => {
+	const path = pathFromUri(uri).dir()
+	return isTestModule(uri, workSpaceUri, config) ? path.dir() : path.append(config.testFolder.replace('./', ''))
+}
 
 const absolutePath = (uri: Uri, workSpaceUri: Uri, config) => {
-    let path = uri.path.replace(workSpaceUri.path, '')
-    if (config.srcFolder) {
-        path = path.replace(new RegExp(`^/${config.srcFolder}/`), '/')
-    }
-    return pathFromUri(workSpaceUri)
-        .append(config.testFolder)
+    let path = uri.fsPath.replace(workSpaceUri.fsPath, '')
+	const _isTestModule = isTestModule(uri, workSpaceUri, config)
+    if (_isTestModule)
+        path = path.replace(new RegExp(`^\\${slashChar}${config.testFolder}\\${slashChar}`), (config.srcFolder ? slashChar + config.srcFolder : '') + slashChar)
+    else if (config.srcFolder)
+        path = path.replace(new RegExp(`^\\${slashChar}${config.srcFolder}\\${slashChar}`), slashChar)
+    var retval = pathFromUri(workSpaceUri)
+    if (!_isTestModule)
+        retval = retval.append(config.testFolder)
+    return retval
         .append(path)
         .dir()
 }
 
-const pathToTestFolder = (uri: Uri, workSpaceUri: Uri, config) =>
+const pathToNewFolder = (uri: Uri, workSpaceUri: Uri, config) =>
     isRelativeFolder(config)
-        ? relativePath(uri, config)
+        ? relativePath(uri, workSpaceUri, config)
         : absolutePath(uri, workSpaceUri, config)
 
-const name = p => p.basename(p.extname())
+const name = (p, ext) => p.basename(ext)
 
-export const pathToFile = (uri: Uri, workSpaceUri: Uri, config) =>
-    pathToTestFolder(uri, workSpaceUri, config).append(
-        name(pathFromUri(uri)) + config.testFileExtension
-    )
+export const pathToFile = (uri: Uri, workSpaceUri: Uri, config) => {
+    const _isTestModule = isTestModule(uri, workSpaceUri, config);
+    const basename = name(pathFromUri(uri), _isTestModule ? config.testFileExtension : config.srcFileExtension);
+    const extname = _isTestModule ? config.srcFileExtension : config.testFileExtension;
+    return pathToNewFolder(uri, workSpaceUri, config).append(basename + extname);
+    }
 
 const getTemplate = (config: {
     testFileTemplate: Array<String> | Object
@@ -45,14 +64,14 @@ const getTemplate = (config: {
 
 const getRelativePath = (p1, p2) =>
     filepath
-        .create(p1.path)
+        .create(p1)
         .dir()
-        .relative(p2.path)
+        .relative(p2.toString())
 
-export const createFile = (file, uri, workSpaceUri, config): Thenable<any> => {
-    const relativePath = getRelativePath(file, uri)
-    const filePath = filepath.create(relativePath)
-    const moduleName = name(filePath)
+export const createFile = (file, uri: Uri, workSpaceUri: Uri, config): Thenable<any> => {
+    const filePath = filepath.create(uri.fsPath)
+    const relativePath = getRelativePath(file, filePath)
+    const moduleName = name(filePath, config.srcFileExtension)
     const modulePath = relativePath.replace(filePath.extname(), '')
     return getTemplate(config).then(template =>
         file.write(
@@ -60,11 +79,13 @@ export const createFile = (file, uri, workSpaceUri, config): Thenable<any> => {
                 .map(line =>
                     line
                         .replace('${moduleName}', moduleName)
-                        .replace('${modulePath}', modulePath)
+                        .replace('${modulePath}', unixifyPath(modulePath))
                         .replace(/\${findPath\('((\/?\w\/?)+)'\)}/, (_, p) =>
-                            getRelativePath(
-                                file,
-                                pathFromUri(workSpaceUri).append(p)
+                            unixifyPath(
+                                getRelativePath(
+                                    file,
+                                    pathFromUri(workSpaceUri).append(p)
+                                )
                             )
                         )
                 )
