@@ -2,41 +2,54 @@ import * as vscode from 'vscode'
 import * as filepath from 'filepath'
 import { Uri } from 'vscode'
 
-const debugMsg = (msg) => vscode.debug.activeDebugConsole.appendLine(msg)
+const debugMsg = msg => vscode.debug.activeDebugConsole.appendLine(msg)
 
-const slashChar = (filepath.create("dir1", "dir2").toString().indexOf("\\") > 0) ? "\\" : "/"
+const slashChar =
+    filepath
+        .create('dir1', 'dir2')
+        .toString()
+        .indexOf('\\') > 0
+        ? '\\'
+        : '/'
 
 const isRelativeFolder = config => config.testFolder.startsWith('./')
 
 const pathFromUri = ({ fsPath }: Uri) => filepath.create(fsPath)
 
-const unixifyPath = (path) => (slashChar == "\\") ? path.replace(/\\/g, "/") : path
+const unixifyPath = path =>
+    slashChar == '\\' ? path.replace(/\\/g, '/') : path
 
 const isTestModule = (uri: Uri, workSpaceUri: Uri, config) => {
     const path = uri.fsPath.replace(workSpaceUri.fsPath, '')
     return isRelativeFolder(config)
-        ? filepath.create(filepath.create(path).dirname()).basename() == config.testFolder.substr(2)
+        ? filepath.create(filepath.create(path).dirname()).basename() ==
+              config.testFolder.substr(2)
         : path.startsWith(slashChar + config.testFolder)
 }
 
 const relativePath = (uri: Uri, workSpaceUri: Uri, config) => {
-	const path = pathFromUri(uri).dir()
-	return isTestModule(uri, workSpaceUri, config) ? path.dir() : path.append(config.testFolder.replace('./', ''))
+    const path = pathFromUri(uri).dir()
+    return isTestModule(uri, workSpaceUri, config)
+        ? path.dir()
+        : path.append(config.testFolder.replace('./', ''))
 }
 
 const absolutePath = (uri: Uri, workSpaceUri: Uri, config) => {
     let path = uri.fsPath.replace(workSpaceUri.fsPath, '')
-	const _isTestModule = isTestModule(uri, workSpaceUri, config)
+    const _isTestModule = isTestModule(uri, workSpaceUri, config)
     if (_isTestModule)
-        path = path.replace(new RegExp(`^\\${slashChar}${config.testFolder}\\${slashChar}`), (config.srcFolder ? slashChar + config.srcFolder : '') + slashChar)
+        path = path.replace(
+            new RegExp(`^\\${slashChar}${config.testFolder}\\${slashChar}`),
+            (config.srcFolder ? slashChar + config.srcFolder : '') + slashChar
+        )
     else if (config.srcFolder)
-        path = path.replace(new RegExp(`^\\${slashChar}${config.srcFolder}\\${slashChar}`), slashChar)
+        path = path.replace(
+            new RegExp(`^\\${slashChar}${config.srcFolder}\\${slashChar}`),
+            slashChar
+        )
     var retval = pathFromUri(workSpaceUri)
-    if (!_isTestModule)
-        retval = retval.append(config.testFolder)
-    return retval
-        .append(path)
-        .dir()
+    if (!_isTestModule) retval = retval.append(config.testFolder)
+    return retval.append(path).dir()
 }
 
 const pathToNewFolder = (uri: Uri, workSpaceUri: Uri, config) =>
@@ -47,11 +60,16 @@ const pathToNewFolder = (uri: Uri, workSpaceUri: Uri, config) =>
 const name = (p, ext) => p.basename(ext)
 
 export const pathToFile = (uri: Uri, workSpaceUri: Uri, config) => {
-    const _isTestModule = isTestModule(uri, workSpaceUri, config);
-    const basename = name(pathFromUri(uri), _isTestModule ? config.testFileExtension : config.srcFileExtension);
-    const extname = _isTestModule ? config.srcFileExtension : config.testFileExtension;
-    return pathToNewFolder(uri, workSpaceUri, config).append(basename + extname);
-    }
+    const _isTestModule = isTestModule(uri, workSpaceUri, config)
+    const basename = name(
+        pathFromUri(uri),
+        _isTestModule ? config.testFileExtension : config.srcFileExtension
+    )
+    const extname = _isTestModule
+        ? config.srcFileExtension
+        : config.testFileExtension
+    return pathToNewFolder(uri, workSpaceUri, config).append(basename + extname)
+}
 
 const getTemplate = (config: {
     testFileTemplate: Array<String> | Object
@@ -62,13 +80,18 @@ const getTemplate = (config: {
               .showQuickPick(Object.keys(config.testFileTemplate))
               .then(key => config.testFileTemplate[key])
 
-const getRelativePath = (p1, p2) =>
-    filepath
-        .create(p1)
-        .dir()
-        .relative(p2.toString())
+const getRelativePath = (p1, p2) => {
+    const dir = filepath.create(p1).dir()
+    const path = dir.relative(p2.toString())
+    return dir.toString() == p2.dir().toString() ? `./${path}` : path
+}
 
-export const createFile = (file, uri: Uri, workSpaceUri: Uri, config): Thenable<any> => {
+export const createFile = (
+    file,
+    uri: Uri,
+    workSpaceUri: Uri,
+    config
+): Thenable<any> => {
     const filePath = filepath.create(uri.fsPath)
     const relativePath = getRelativePath(file, filePath)
     const moduleName = name(filePath, config.srcFileExtension)
