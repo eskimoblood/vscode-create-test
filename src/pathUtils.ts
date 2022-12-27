@@ -61,10 +61,17 @@ const name = (p, ext) => p.basename(ext)
 
 export const pathToFile = (uri: Uri, workSpaceUri: Uri, config) => {
     const _isTestModule = isTestModule(uri, workSpaceUri, config)
-    const basename = name(
+    let basename = name(
         pathFromUri(uri),
         _isTestModule ? config.testFileExtension : config.srcFileExtension
     )
+    if (config.testFilePrefix) {
+        if (_isTestModule) {
+            basename = basename.replace(new RegExp(`^${config.testFilePrefix}`), '')
+        } else {
+            basename = config.testFilePrefix + basename
+        }
+    }
     const extname = _isTestModule
         ? config.srcFileExtension
         : config.testFileExtension

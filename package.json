@@ -61,6 +61,11 @@
                     "type": "string",
                     "default": ".js",
                     "description": "source file extension"
+                },
+                "createTest.testFilePrefix": {
+                    "type": "string",
+                    "default": "",
+                    "description": "test file prefix"
                 }
             }
         },
